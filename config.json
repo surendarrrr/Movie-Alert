@@ -1,9 +1,6 @@
 {
-  "detector": "venue_date",
-  "movie": "Avengers Endgame",
+  "detector": "bms_date",
   "requested_date": "20260925",
-  "venue_code": "RAKK",
-  "venue_label": "RAKKI CINEMAS: KELAMBAKKAM",
-  "url_template": "https://in.bookmyshow.com/movies/chennai/avengers-endgame-encore/buytickets/ET00514163/20260925?etCodes=ET00514163&language=english&refEventCode=ET00514163",
-  "min_references": 10
+  "url_template": "https://in.bookmyshow.com/cinemas/chennai/rakki-cinemas-omr-kelambakkam/buytickets/RAKK/{date}",
+  "min_references": 3
 }
