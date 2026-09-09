@@ -1,9 +1,9 @@
 {
   "detector": "venue_date",
-  "movie": "Spiderman: Brand New Day (3D)",
-  "requested_date": "20260730",
-  "venue_code": "INTO",
-  "venue_label": "PVR: MARINA MALL",
-  "url_template": "https://in.bookmyshow.com/movies/chennai/spider-man-brand-new-day-3d/buytickets/ET00502600/20260730?etCodes=ET00502600&language=English&refEventCode=ET00502600",
+  "movie": "Avengers Endgame",
+  "requested_date": "20260925",
+  "venue_code": "RAKK",
+  "venue_label": "RAKKI CINEMAS: KELAMBAKKAM",
+  "url_template": "https://in.bookmyshow.com/movies/chennai/avengers-endgame-encore/buytickets/ET00514163/20260925?etCodes=ET00514163&language=english&refEventCode=ET00514163",
   "min_references": 10
 }
