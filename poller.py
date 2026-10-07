@@ -89,13 +89,24 @@ def load_config():
         cfg["target_url"] = cfg["url_template"].format(date=cfg["requested_date"])
 
     required = ["target_url", "telegram_bot_token", "telegram_chat_id"]
-    detector = cfg.get("detector")
-    if detector in ("bms_date", "venue_date"):
-        required.append("requested_date")
-    elif detector != "venue_date":
-        required.append("theatre")
-    if detector == "venue_date" and not (cfg.get("venue_code") or cfg.get("venue_codes")):
-        sys.exit("venue_date detector needs 'venue_code' or 'venue_codes'")
+detector = cfg.get("detector")
+
+if detector in ("bms_date", "venue_date", "venue_keyword_date"):
+    required.append("requested_date")
+else:
+    required.append("theatre")
+
+if detector == "venue_date":
+    if not (cfg.get("venue_code") or cfg.get("venue_codes")):
+        sys.exit(
+            "venue_date detector needs 'venue_code' or 'venue_codes'"
+        )
+
+if detector == "venue_keyword_date":
+    if not (cfg.get("keyword") or cfg.get("keywords")):
+        sys.exit(
+            "venue_keyword_date detector needs 'keyword' or 'keywords'"
+        )
     missing = [k for k in required if not cfg.get(k)]
     if missing:
         sys.exit(f"Missing required config: {', '.join(missing)}")
@@ -205,13 +216,71 @@ def is_available_venue_date(page_text, cfg):
     codes = cfg.get("venue_codes") or [cfg["venue_code"]]
     return any("/{}/{}".format(code, date) in page_text for code in codes)
 
+def is_available_venue_keyword_date(page_text, cfg):
+    """
+    Detect when a movie keyword appears at a particular theatre on a
+    particular date.
+
+    This does not depend on the movie's ET event ID. It monitors the
+    theatre page directly, which is useful when special formats such as
+    EPIQ receive a separate BookMyShow movie ID.
+    """
+    requested_date = str(cfg["requested_date"])
+
+    keywords = cfg.get("keywords")
+    if not keywords:
+        keywords = [cfg["keyword"]]
+
+    # Normalize HTML whitespace and make matching case-insensitive.
+    haystack = re.sub(r"\s+", " ", page_text).lower()
+
+    keyword_found = any(
+        re.sub(r"\s+", " ", keyword).lower().strip() in haystack
+        for keyword in keywords
+    )
+
+    if not keyword_found:
+        print(
+            "[detector] None of the movie keywords were found: "
+            + ", ".join(keywords)
+        )
+        return False
+
+    # Confirm that BMS is actually displaying the requested date.
+    # BMS may silently redirect/fall back when a future date is disabled.
+    date_tokens = re.findall(r"20\d{6}", page_text)
+    date_counts = Counter(date_tokens)
+
+    requested_count = date_counts.get(requested_date, 0)
+    top_date = date_counts.most_common(1)[0][0] if date_counts else None
+    minimum = int(cfg.get("min_date_references", 3))
+
+    print(
+        f"[detector] keyword_found={keyword_found}, "
+        f"requested_date={requested_date}, "
+        f"requested_count={requested_count}, "
+        f"top_date={top_date}"
+    )
+
+    date_is_active = (
+        top_date == requested_date
+        and requested_count >= minimum
+    )
+
+    return keyword_found and date_is_active
 
 def is_available(page_text, cfg):
     detector = cfg.get("detector")
+
+    if detector == "venue_keyword_date":
+        return is_available_venue_keyword_date(page_text, cfg)
+
     if detector == "venue_date":
         return is_available_venue_date(page_text, cfg)
+
     if detector == "bms_date":
         return is_available_bms_date(page_text, cfg)
+
     return is_available_generic(page_text, cfg)
 
 
@@ -268,7 +337,11 @@ def main():
     print(f"[{label}] available={available} (was {state.get('available')})")
 
     if available and not state.get("available"):
-        if cfg.get("detector") in ("bms_date", "venue_date"):
+        if cfg.get("detector") in (
+            "bms_date",
+            "venue_date",
+            "venue_keyword_date",
+        ):
             rd = cfg["requested_date"]
             pretty = f"{rd[6:8]}-{rd[4:6]}-{rd[0:4]}"
             venue = cfg.get("venue_label") or cfg.get("venue_code") or ""
