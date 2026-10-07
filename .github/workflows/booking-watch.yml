@@ -1,20 +1,14 @@
 name: booking-watch
 
 on:
-  # schedule:
-  #   # Every ~10 min, offset off :00/:10 etc. GitHub delays/drops scheduled
-  #   # runs during high load (worst at the top of the hour), so the odd minutes
-  #   # get served more reliably. Runs are still best-effort, not guaranteed.
-  #   - cron: "4,14,24,34,44,54 * * * *"
   workflow_dispatch:
-        inputs:
-          test_telegram:
-            description: "Send a Telegram test message"
-            required: false
-            type: boolean
-            default: false   # lets you trigger a manual run from the Actions tab
+    inputs:
+      test_telegram:
+        description: "Send a Telegram test message"
+        required: false
+        type: boolean
+        default: false
 
-# Allow the workflow to commit the updated state file back to the repo.
 permissions:
   contents: write
 
@@ -25,6 +19,7 @@ concurrency:
 jobs:
   poll:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -35,17 +30,55 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run poller
+      - name: Send Telegram test message
+        if: ${{ inputs.test_telegram == true }}
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          # Route through an India egress so BookMyShow doesn't 403 the
-          # US-based GitHub runner. Set SCRAPERAPI_KEY (or PROXY_URL) as a secret.
+        run: |
+          python - <<'PY'
+          import os
+          import requests
+
+          token = os.environ["TELEGRAM_BOT_TOKEN"]
+          chat_id = os.environ["TELEGRAM_CHAT_ID"]
+
+          if not token:
+              raise RuntimeError("TELEGRAM_BOT_TOKEN secret is empty")
+
+          if not chat_id:
+              raise RuntimeError("TELEGRAM_CHAT_ID secret is empty")
+
+          response = requests.post(
+              f"https://api.telegram.org/bot{token}/sendMessage",
+              json={
+                  "chat_id": chat_id,
+                  "text": "✅ Movie-Alert test successful!\n\nGitHub Actions can send Telegram messages.",
+                  "disable_web_page_preview": True,
+              },
+              timeout=30,
+          )
+
+          print("Telegram HTTP status:", response.status_code)
+
+          if not response.ok:
+              print("Telegram response:", response.text)
+
+          response.raise_for_status()
+          print("Test message sent successfully.")
+          PY
+
+      - name: Run poller
+        if: ${{ inputs.test_telegram != true }}
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           SCRAPERAPI_KEY: ${{ secrets.SCRAPERAPI_KEY }}
           PROXY_URL: ${{ secrets.PROXY_URL }}
         run: python poller.py
 
       - name: Persist state
+        if: ${{ inputs.test_telegram != true }}
         run: |
           if [[ -n "$(git status --porcelain state.json)" ]]; then
             git config user.name "booking-watch-bot"
