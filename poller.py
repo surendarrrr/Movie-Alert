@@ -89,27 +89,29 @@ def load_config():
         cfg["target_url"] = cfg["url_template"].format(date=cfg["requested_date"])
 
     required = ["target_url", "telegram_bot_token", "telegram_chat_id"]
-detector = cfg.get("detector")
+    detector = cfg.get("detector")
 
-if detector in ("bms_date", "venue_date", "venue_keyword_date"):
-    required.append("requested_date")
-else:
-    required.append("theatre")
+    if detector in ("bms_date", "venue_date", "venue_keyword_date"):
+        required.append("requested_date")
+    else:
+        required.append("theatre")
 
-if detector == "venue_date":
-    if not (cfg.get("venue_code") or cfg.get("venue_codes")):
-        sys.exit(
-            "venue_date detector needs 'venue_code' or 'venue_codes'"
-        )
+    if detector == "venue_date":
+        if not (cfg.get("venue_code") or cfg.get("venue_codes")):
+            sys.exit(
+                "venue_date detector needs 'venue_code' or 'venue_codes'"
+            )
 
-if detector == "venue_keyword_date":
-    if not (cfg.get("keyword") or cfg.get("keywords")):
-        sys.exit(
-            "venue_keyword_date detector needs 'keyword' or 'keywords'"
-        )
+    if detector == "venue_keyword_date":
+        if not (cfg.get("keyword") or cfg.get("keywords")):
+            sys.exit(
+                "venue_keyword_date detector needs 'keyword' or 'keywords'"
+            )
+    
     missing = [k for k in required if not cfg.get(k)]
     if missing:
         sys.exit(f"Missing required config: {', '.join(missing)}")
+    
     return cfg
 
 
