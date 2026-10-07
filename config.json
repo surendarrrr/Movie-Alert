@@ -1,6 +1,6 @@
 {
   "detector": "bms_date",
-  "requested_date": "20261008",
+  "requested_date": "Dorothy",
   "url_template": "https://in.bookmyshow.com/cinemas/chennai/rakki-cinemas-omr-kelambakkam/buytickets/RAKK/20261008",
-  "min_references": 10
+  "min_references": 1
 }
