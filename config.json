@@ -4,5 +4,6 @@
   "requested_date": "20261008",
   "venue_code": "RAKK",
   "venue_label": "Test Theatre",
-  "url_template": "https://in.bookmyshow.com/movies/chennai/baththa/buytickets/ET00515520/{date}"
+  "url_template": "https://in.bookmyshow.com/movies/chennai/baththa/buytickets/ET00515520"
+  "min_references": 10
 }
