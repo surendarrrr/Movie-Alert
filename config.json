@@ -1,6 +1,6 @@
 {
   "detector": "bms_date",
-  "requested_date": "20260925",
-  "url_template": "https://in.bookmyshow.com/cinemas/chennai/rakki-cinemas-omr-kelambakkam/buytickets/RAKK/{date}",
-  "min_references": 3
+  "requested_date": "20261008",
+  "url_template": "https://in.bookmyshow.com/cinemas/chennai/rakki-cinemas-omr-kelambakkam/buytickets/RAKK/20261008",
+  "min_references": 10
 }
