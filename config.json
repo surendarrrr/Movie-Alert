@@ -1,13 +1,13 @@
 {
   "detector": "venue_keyword_date",
-  "movie": "The Odyssey - Rakki EPIQ",
-  "requested_date": "20261008",
+  "movie": "Avengers: Doomsday - Rakki EPIQ",
+  "requested_date": "20261217",
   "venue_code": "RAKK",
-  "venue_label": "Rakki Cinemas - EPIQ",
+  "venue_label": "Rakki Cinemas: OMR, Kelambakkam - EPIQ",
   "keywords": [
-    "The Odyssey",
-    "Dorothy"
+    "Avengers: Doomsday",
+    "Avengers Doomsday", "Avengers","John"
   ],
-  "url_template": "https://in.bookmyshow.com/cinemas/chennai/rakki-cinemas-omr-kelambakkam/buytickets/RAKK/20261008",
-  "min_date_references": 3
+  "url_template": "https://in.bookmyshow.com/cinemas/chennai/rakki-cinemas-omr-kelambakkam/buytickets/RAKK/20261118",
+  "min_date_references": 1
 }
