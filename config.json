@@ -1,12 +1,12 @@
 {
   "detector": "venue_keyword_date",
   "movie": "Avengers: Doomsday - Rakki EPIQ",
-  "requested_date": "20261217",
+  "requested_date": "20261118",
   "venue_code": "RAKK",
   "venue_label": "Rakki Cinemas: OMR, Kelambakkam - EPIQ",
   "keywords": [
     "Avengers: Doomsday",
-    "Avengers Doomsday", "Avengers","John"
+    "Avengers Doomsday", "Avengers","Ramayana"
   ],
   "url_template": "https://in.bookmyshow.com/cinemas/chennai/rakki-cinemas-omr-kelambakkam/buytickets/RAKK/20261118",
   "min_date_references": 1
